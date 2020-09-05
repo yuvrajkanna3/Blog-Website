@@ -1,0 +1,10 @@
+<%- include("../partials/header");-%>
+<h1>Home</h1>
+<p><%=para1 %></p>
+
+
+<%postarr.forEach(function(pos){ %>
+<h1><%= pos.title %></h1>
+<p><%= pos.content %>  </p>
+<% }); %>
+<%- include("../partials/footer");-%>
