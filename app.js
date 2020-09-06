@@ -3,6 +3,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
+const _ = require('lodash');
 const postarray = [];
 const homeStartingContent = "Lacus vel facilisis volutpat est velit egestas dui id ornare. Semper auctor neque vitae tempus quam. Sit amet cursus sit amet dictum sit amet justo. Viverra tellus in hac habitasse. Imperdiet proin fermentum leo vel orci porta. Donec ultrices tincidunt arcu non sodales neque sodales ut. Mattis molestie a iaculis at erat pellentesque adipiscing. Magnis dis parturient montes nascetur ridiculus mus mauris vitae ultricies. Adipiscing elit ut aliquam purus sit amet luctus venenatis lectus. Ultrices vitae auctor eu augue ut lectus arcu bibendum at. Odio euismod lacinia at quis risus sed vulputate odio ut. Cursus mattis molestie a iaculis at erat pellentesque adipiscing.";
 const aboutContent = "Hac habitasse platea dictumst vestibulum rhoncus est pellentesque. Dictumst vestibulum rhoncus est pellentesque elit ullamcorper. Non diam phasellus vestibulum lorem sed. Platea dictumst quisque sagittis purus sit. Egestas sed sed risus pretium quam vulputate dignissim suspendisse. Mauris in aliquam sem fringilla. Semper risus in hendrerit gravida rutrum quisque non tellus orci. Amet massa vitae tortor condimentum lacinia quis vel eros. Enim ut tellus elementum sagittis vitae. Mauris ultrices eros in cursus turpis massa tincidunt dui.";
@@ -12,51 +13,61 @@ const app = express();
 
 app.set('view engine', 'ejs');
 
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
 app.use(express.static("public"));
 
 
 
 
-app.get('/',function(req,res){
-  res.render('home',{para1:homeStartingContent , postarr:postarray });
+app.get('/', function(req, res) {
+  res.render('home', {
+    para1: homeStartingContent,
+    postarr: postarray
+  });
 
 
 });
 
-app.get('/about', function(req,res){
-  res.render('about',{para2:aboutContent});
+app.get('/about', function(req, res) {
+  res.render('about', {
+    para2: aboutContent
+  });
 });
-app.get('/contact',function(req,res){
-  res.render('contact',{para3:contactContent});
+app.get('/contact', function(req, res) {
+  res.render('contact', {
+    para3: contactContent
+  });
 });
-app.get('/compose',function(req,res){
+app.get('/compose', function(req, res) {
   res.render('compose');
 });
-app.get('/posts/:postName',function(req,res){
-   const parameter = req.params.postName ;
+app.get('/posts/:postName', function(req, res) {
+  const requestedTitle = req.params.postName;
+  postarray.forEach(function(p) {
+    const storedTitle = p.title;
+    if (_.kebabCase(storedTitle) === _.kebabCase(requestedTitle)) {
 
-   postarray.forEach(function(post){
-     const reqTitle = post.title;
-     if(reqTitle === postarray.title){
-       console.log('Match Found');
-     }
-     else{
-       console.log('No Match found');
-     }
-     console.log(parameter);
-   })
+        res.render('post',{
+          title : p.title ,
+          content : p.content
+        });
+
+
+    }
+  });
 });
 
 
-app.post('/compose',function(req,res){
+app.post('/compose', function(req, res) {
   const post = {
-    title:req.body.postTitle,
-    content:req.body.postContent
+    title: req.body.postTitle,
+    content: req.body.postContent
   };
 
-postarray.push(post);
-res.redirect('/');
+  postarray.push(post);
+  res.redirect('/');
 });
 
 
